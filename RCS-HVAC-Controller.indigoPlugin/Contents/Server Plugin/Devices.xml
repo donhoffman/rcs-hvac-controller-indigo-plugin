@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<Devices>
+	<Device type="thermostat" id="rcsHvacController">
+		<Name>RCS 6 Zone HVAC Controller</Name>
+		<ConfigUI>
+			<!--
+				The only user-settable parameter for this device is the zone id.  All other inherited properties are
+				read-only.
+			-->
+			<Field type="label" id="zoneIndexLabel">
+				<Label>Select the zone index:</Label>
+			</Field>
+			<Field type="menu" id="zoneIndex" defaultValue="1">
+				<Label>Zone ID:</Label>
+				<List>
+					<Option value="1">Zone 1</Option>
+					<Option value="2">Zone 2</Option>
+					<Option value="3">Zone 3</Option>
+					<Option value="4">Zone 4</Option>
+					<Option value="5">Zone 5</Option>
+					<Option value="6">Zone 6</Option>
+				</List>
+			</Field>
+			<!--	Read Only		-->
+			<Field id="ShowCoolHeatEquipmentStateUI" hidden='true' type="checkbox" defaultValue="true"/>
+			<Field id="NumTemperatureInputs" hidden='true' type="textfield" defaultValue="0"/>
+			<Field id="NumHumidityInputs" hidden='true' type="textfield" defaultValue="1"/>
+			<Field id="SupportsHeatSetpoint" hidden='true' type="checkbox" defaultValue="true"/>
+			<Field id="SupportsCoolSetpoint" hidden='true' type="checkbox" defaultValue="true"/>
+			<Field id="SupportsHvacFanMode" hidden='true' type="checkbox" defaultValue="true"/>
+			<Field id="SupportsHvacOperationMode" hidden='true' type="checkbox" defaultValue="true"/>
+		</ConfigUI>
+		<States>
+			<!-- By default thermostat type devices automatically inherit these
+			read-only states:
+
+				temperatureInputsAll, humidityInputsAll,
+				hvacOperationModeIsOff, hvacOperationModeIsHeat, hvacOperationModeIsCool,
+				hvacOperationModeIsAuto, hvacOperationModeIsProgramHeat, hvacOperationModeIsProgramCool,
+				hvacOperationModeIsProgramAuto,
+				hvacFanModeIsAuto, hvacFanModeIsAlwaysOn.
+			
+			Additionally, the following writable states are inherited:
+
+				temperatureInput1, temperatureInput2, temperatureInput3,
+				humidityInput1, humidityInput2, humidityInput3,
+				setpointHeat, setpointCool,
+				hvacOperationMode, hvacFanMode,
+				hvacCoolerIsOn, hvacHeaterIsOn, hvacFanIsOn
+			
+			The Indigo Server automatically updates some of the read-only states when
+			a writable state is updated. For example, if your plugin updates the
+			temperatureInput1 state then the temperatureInputsAll state is automatically
+			updated for you. Likewise, if you update the hvacOperationMode state to
+			indigo.kHvacMode.Heat then the read-only state hvacOperationModeIsHeat will
+			be set to True and all of the other hvacOperationModeIs* states will be set
+			to False.
+
+			The plugin can specify additional custom states and custom
+			actions (in Actions.xml) to modify custom states.
+			-->
+			<State id="zoneDamperStatus">
+				<ValueType>
+					<List>
+						<Option value="open">Open</Option>
+						<Option value="closed">Closed</Option>
+					</List>
+				</ValueType>
+				<TriggerLabel>Zone Damper Status</TriggerLabel>
+				<ControlPageLabel>Zone Damper Status</ControlPageLabel>
+			</State>
+		</States>
+	</Device>
+</Devices>
