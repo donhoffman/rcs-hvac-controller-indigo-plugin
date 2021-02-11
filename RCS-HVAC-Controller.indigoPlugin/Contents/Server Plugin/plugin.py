@@ -161,14 +161,14 @@ class Plugin(indigo.PluginBase):
         actionStr = _lookupActionStrFromHvacMode(newHvacMode)
         if sendSuccess:
             # If success then log that the command was successfully sent.
-            indigo.server.log(u"sent \"%s\" mode change to %s" % (dev.name, actionStr))
+            indigo.server.log(u"Sent \"%s\" mode change to %s" % (dev.name, actionStr))
 
             # And then tell the Indigo Server to update the state.
             if "hvacOperationMode" in dev.states:
                 dev.updateStateOnServer("hvacOperationMode", newHvacMode)
         else:
             # Else log failure but do NOT update state on Indigo Server.
-            indigo.server.log(u"send \"%s\" mode change to %s failed" % (dev.name, actionStr), isError=True)
+            indigo.server.log(u"Send \"%s\" mode change to %s failed" % (dev.name, actionStr), isError=True)
 
     def _handleChangeFanModeAction(self, dev, newFanMode):
         # Command hardware module (dev) to change the fan mode here:
@@ -178,14 +178,14 @@ class Plugin(indigo.PluginBase):
         actionStr = _lookupActionStrFromFanMode(newFanMode)
         if sendSuccess:
             # If success then log that the command was successfully sent.
-            indigo.server.log(u"sent \"%s\" fan mode change to %s" % (dev.name, actionStr))
+            indigo.server.log(u"Sent \"%s\" fan mode change to %s" % (dev.name, actionStr))
 
             # And then tell the Indigo Server to update the state.
             if "hvacFanMode" in dev.states:
                 dev.updateStateOnServer("hvacFanMode", newFanMode)
         else:
             # Else log failure but do NOT update state on Indigo Server.
-            indigo.server.log(u"send \"%s\" fan mode change to %s failed" % (dev.name, actionStr), isError=True)
+            indigo.server.log(u"Send \"%s\" fan mode change to %s failed" % (dev.name, actionStr), isError=True)
 
     def _handleChangeSetpointAction(self, dev, newSetpoint, logActionName, stateKey):
         # Note:  Heat and cool must always be the same on this hardware.
@@ -209,11 +209,11 @@ class Plugin(indigo.PluginBase):
 
         if sendSuccess:
             # If success then log that the command was successfully sent.
-            indigo.server.log(u"sent \"%s\" %s to %.1f°" % (dev.name, logActionName, newSetpoint))
+            indigo.server.log(u"Sent \"%s\" %s to %.1f°" % (dev.name, logActionName, newSetpoint))
 
             # And then tell the Indigo Server to update the state.
             dev.updateStateOnServer(u"setpointCool", newSetpoint, uiValue="%.1f °F" % (newSetpoint,))
             dev.updateStateOnServer(u"setpointHeat", newSetpoint, uiValue="%.1f °F" % (newSetpoint,))
         else:
             # Else log failure but do NOT update state on Indigo Server.
-            indigo.server.log(u"send \"%s\" %s to %.1f° failed" % (dev.name, logActionName, newSetpoint), isError=True)
+            indigo.server.log(u"Send \"%s\" %s to %.1f° failed" % (dev.name, logActionName, newSetpoint), isError=True)

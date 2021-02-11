@@ -128,7 +128,7 @@ class RCS(object):
         for param in paramList2:
             if param.find("H1A=") == 0:
                 heatCall = int(param[4:])
-                self.plugin.debugLog(u"Heat call for system: %s" % heatCall)
+                self.plugin.debugLog(u"Heat call for system: %s" % (heatCall,))
             if param.find("D") == 0:
                 zoneIndex = str(param[1:2])
                 damperStatus = int(param[3:])
