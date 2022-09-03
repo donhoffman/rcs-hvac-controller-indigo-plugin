@@ -12,18 +12,18 @@ import indigo
 from rcs import RCS
 
 kHvacModeEnumToStrMap = {
-    indigo.kHvacMode.Cool			: "cool",
-    indigo.kHvacMode.Heat			: "heat",
-    indigo.kHvacMode.HeatCool		: "auto",
-    indigo.kHvacMode.Off			: "off",
-    indigo.kHvacMode.ProgramHeat	: "program heat",
-    indigo.kHvacMode.ProgramCool	: "program cool",
-    indigo.kHvacMode.ProgramHeatCool	: "program auto"
+    indigo.kHvacMode.Cool:              "cool",
+    indigo.kHvacMode.Heat:              "heat",
+    indigo.kHvacMode.HeatCool:          "auto",
+    indigo.kHvacMode.Off:               "off",
+    indigo.kHvacMode.ProgramHeat:       "program heat",
+    indigo.kHvacMode.ProgramCool:       "program cool",
+    indigo.kHvacMode.ProgramHeatCool:   "program auto"
 }
 
 kFanModeEnumToStrMap = {
-    indigo.kFanMode.AlwaysOn			: "always on",
-    indigo.kFanMode.Auto				: "auto"
+    indigo.kFanMode.AlwaysOn:           "always on",
+    indigo.kFanMode.Auto:               "auto"
 }
 
 
@@ -194,6 +194,7 @@ class Plugin(indigo.PluginBase):
     def _handleChangeSetpointAction(self, dev, newSetpoint, logActionName, stateKey):
         # Note:  Heat and cool must always be the same on this hardware.
         #  So we always set both to same value when one is set.
+        self.debugLog(f"Change setpoint action: {newSetpoint=} {logActionName=} {stateKey=}")
 
         if newSetpoint < 40.0:
             newSetpoint = 40.0  # Arbitrary -- set to whatever hardware minimum setpoint value is.

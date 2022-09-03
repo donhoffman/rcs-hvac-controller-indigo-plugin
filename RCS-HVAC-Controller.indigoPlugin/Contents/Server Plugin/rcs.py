@@ -108,7 +108,7 @@ class RCS(object):
                 if currDev:
                     temperature = float(param[2:])
                     currDev.updateStateOnServer("temperatureInput1", temperature, uiValue=f"{temperature} °F")
-                    self.plugin.logger.debug("Temperature = %f" % (temperature))
+                    self.plugin.logger.debug("Temperature = %f" % temperature)
             elif param.find(b"SP=") == 0:
                 self.plugin.logger.debug("Got setpoint")
                 if currDev:
@@ -117,7 +117,7 @@ class RCS(object):
                     #  to be the same.
                     currDev.updateStateOnServer("setpointHeat", setpoint, uiValue=f"{setpoint} °F")
                     currDev.updateStateOnServer("setpointCool", setpoint, uiValue=f"{setpoint} °F")
-                    self.plugin.logger.debug("Setpoint = %f" % (setpoint))
+                    self.plugin.logger.debug("Setpoint = %f" % setpoint)
             elif param.find(b"M=") == 0:
                 self.plugin.logger.debug("Got mode")
                 if currDev:
@@ -151,12 +151,12 @@ class RCS(object):
                 currDev = self.zones.get(str(zoneIndex), None)
                 if currDev:
                     currDev.updateStateOnServer("zoneDamperStatus", DamperStatusMapReverse[damperStatus])
-                    isHeatOn = True
                     isHeatOn = (damperStatus == 0) and (heatCall == 1)
                     currDev.updateStateOnServer("hvacHeaterIsOn", isHeatOn)
             else:
-                self.plugin.logger.debug("Ignored parameter %s" % (param,))            
-                                                        
+                self.plugin.logger.debug("Ignored parameter %s" % (param,))
+
+    # noinspection DuplicatedCode
     def setHvacMode(self, zoneIndex, hvacMode):
         if not self.conn or not self.conn.is_open:
             return False
@@ -170,6 +170,7 @@ class RCS(object):
         self.plugin.logger.debug("Sent command: %s" % (cmdString,))
         return True
 
+    # noinspection DuplicatedCode
     def setFanMode(self, zoneIndex, fanMode):
         if not self.conn or not self.conn.is_open:
             return False
