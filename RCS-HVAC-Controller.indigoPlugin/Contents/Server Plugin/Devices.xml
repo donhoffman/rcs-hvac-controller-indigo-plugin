@@ -23,8 +23,8 @@
 			</Field>
 			<!--	Read Only		-->
 			<Field id="ShowCoolHeatEquipmentStateUI" hidden='true' type="checkbox" defaultValue="true"/>
-			<Field id="NumTemperatureInputs" hidden='true' type="textfield" defaultValue="0"/>
-			<Field id="NumHumidityInputs" hidden='true' type="textfield" defaultValue="1"/>
+			<Field id="NumTemperatureInputs" hidden='true' type="textfield" defaultValue="1"/>
+			<Field id="NumHumidityInputs" hidden='true' type="textfield" defaultValue="0"/>
 			<Field id="SupportsHeatSetpoint" hidden='true' type="checkbox" defaultValue="true"/>
 			<Field id="SupportsCoolSetpoint" hidden='true' type="checkbox" defaultValue="true"/>
 			<Field id="SupportsHvacFanMode" hidden='true' type="checkbox" defaultValue="true"/>

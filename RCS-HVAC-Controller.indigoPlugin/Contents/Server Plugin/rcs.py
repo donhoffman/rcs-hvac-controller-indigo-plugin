@@ -52,17 +52,17 @@ class RCS(object):
             self.conn.close()
 
     def monitorZone(self, zoneIndex, dev):
-        self.zones[str(zoneIndex)] = dev
+        self.plugin.logger.debug("zoneIndex Type: %s" % (type(zoneIndex, )))
+        self.zones[zoneIndex] = dev
         
     def unMonitorZone(self, zoneIndex):
-        zoneIndex = str(zoneIndex)
         if zoneIndex in self.zones:
             del self.zones[zoneIndex]
 
     def openComm(self, serialPort):
         self.conn = self.plugin.openSerial("RCS", serialPort, 9600, timeout=1, writeTimeout=1)
         if self.conn:
-            self.plugin.debugLog(u"Serial port %s open." % (serialPort,))
+            self.plugin.logger.debug("Serial port %s open." % (serialPort,))
             return True
         else:
             self.plugin.errorLog("Could not open serial port for %s" % (serialPort,))
@@ -70,79 +70,95 @@ class RCS(object):
 
     def closeComm(self):
         if self.conn:
-            self.plugin.debugLog(u"Closing comm port.")
+            self.plugin.logger.debug("Closing comm port.")
             self.conn.close()
             self.conn = None
 
     def getAllZoneStatus(self):
         # Todo: Is there a way to see if fan is on in manual mode?
-        if not self.conn and not self.conn.is_open:
+        if not self.conn or not self.conn.is_open:
             return
         currDev = None
 
         with self.connLock:
             # We get both type 1 and 2 status in same lock to minimize inconsistency.
             self.plugin.sleep(kSleepBetweenComm)
-            self.conn.write("A=1 R=1\r")
+            self.conn.write(b"A=1 R=1\r")
             statusType1 = self.conn.readline()
-            self.plugin.debugLog(u"Received status 1 line: %s" % (statusType1,))
-            self.conn.write("A=1 R=2\r")
+            self.plugin.logger.debug("Received status 1 line: %s" % (statusType1,))
+            self.conn.write(b"A=1 R=2\r")
             statusType2 = self.conn.readline()
-            self.plugin.debugLog(u"Received status 2 line: %s" % (statusType1,))
+            self.plugin.logger.debug("Received status 2 line: %s" % (statusType2,))
 
         paramList1 = statusType1.split()
+        self.plugin.logger.debug(" paramList1 = %s" % (paramList1,))
         for param in paramList1:
-            if param.find("Z=") == 0:
-                zoneIndex = str(param[2:])
-                currDev = self.zones.get(zoneIndex, None)
-                if not currDev:
-                    self.plugin.debugLog(u"Out of range or unknown zone %s. Skipping" % (zoneIndex,))
-            elif param.find("T=") == 0:
+            if param.find(b"Z=") == 0:
+                self.plugin.logger.debug("Got zone index")
+                zoneIndex = int(param[2:])
+                self.plugin.logger.debug(type(zoneIndex))
+                self.plugin.logger.debug("Got zone %d." % (zoneIndex, ))
+                self.plugin.logger.debug(type(zoneIndex))
+                if str(zoneIndex) in self.zones:
+                    currDev = self.zones.get(str(zoneIndex), None)
+                else:
+                    self.plugin.logger.debug("Out of range or unknown zone %d. Skipping" % (zoneIndex,))
+            elif param.find(b"T=") == 0:
+                self.plugin.logger.debug("Got temperature")
                 if currDev:
-                    temperature = int(param[2:])
-                    currDev.updateStateOnServer(u"temperatureInput1", temperature)
-            elif param.find("SP=") == 0:
+                    temperature = float(param[2:])
+                    currDev.updateStateOnServer("temperatureInput1", temperature, uiValue=f"{temperature} °F")
+                    self.plugin.logger.debug("Temperature = %f" % (temperature))
+            elif param.find(b"SP=") == 0:
+                self.plugin.logger.debug("Got setpoint")
                 if currDev:
-                    setpoint = int(param[3:])
+                    setpoint = float(param[3:])
                     # Since RCS only supports one setpoint for both heat and cool, we set the indigo values for both
                     #  to be the same.
-                    currDev.updateStateOnServer(u"setpointHeat", setpoint, uiValue=u"%.1f °F" % (setpoint,))
-                    currDev.updateStateOnServer(u"setpointCool", setpoint, uiValue=u"%.1f °F" % (setpoint,))
-            elif param.find("M=") == 0:
+                    currDev.updateStateOnServer("setpointHeat", setpoint, uiValue=f"{setpoint} °F")
+                    currDev.updateStateOnServer("setpointCool", setpoint, uiValue=f"{setpoint} °F")
+                    self.plugin.logger.debug("Setpoint = %f" % (setpoint))
+            elif param.find(b"M=") == 0:
+                self.plugin.logger.debug("Got mode")
                 if currDev:
-                    mode = HvacModeMapReverse[str(param[2:])]
+                    mode = HvacModeMapReverse[param[2:].decode('ascii')]
                     if mode:
-                        currDev.updateStateOnServer(u"hvacOperationMode", mode)
-            elif param.find("FM=") == 0:
+                        currDev.updateStateOnServer("hvacOperationMode", mode)
+            elif param.find(b"FM=") == 0:
+                self.plugin.logger.debug("Got fan mode")
                 if currDev:
-                    fanMode = FanModeMapReverse[str(param[3:])]
-                    currDev.updateStateOnServer(u"hvacFanMode", fanMode)
+                    fanMode = FanModeMapReverse[param[3:].decode("ascii")]
+                    currDev.updateStateOnServer("hvacFanMode", fanMode)
             else:
-                self.plugin.debugLog(u"Ignored parameter %s" % (param,))
-                
+                self.plugin.logger.debug("Ignored parameter %s" % (param,))
+
         # Getstatus type 2
         #   Cooling functions not implemented as no air conditioner to test with.
         #   Fan modes not tested as not sure they are support in my installation.
         heatCall = 0
         paramList2 = statusType2.split()
+        self.plugin.logger.debug(" paramList2 = %s" % (paramList2,))
         for param in paramList2:
-            if param.find("H1A=") == 0:
+            if param.find(b"H1A=") == 0:
+                self.plugin.logger.debug("Got heat call")
                 heatCall = int(param[4:])
-                self.plugin.debugLog(u"Heat call for system: %s" % (heatCall,))
-            if param.find("D") == 0:
-                zoneIndex = str(param[1:2])
+                self.plugin.logger.debug("Heat call for system: %s" % (heatCall,))
+            elif param.find(b"D") == 0:
+                self.plugin.logger.debug("Got damper info")
+                zoneIndex = int(param[1:2])
                 damperStatus = int(param[3:])
-                self.plugin.debugLog(u"Damper info for zone %s: %s" % (zoneIndex, damperStatus))
-                currDev = self.zones.get(zoneIndex, None)
+                self.plugin.logger.debug("Damper info for zone %d: %d" % (zoneIndex, damperStatus))
+                currDev = self.zones.get(str(zoneIndex), None)
                 if currDev:
-                    currDev.updateStateOnServer(u"zoneDamperStatus", DamperStatusMapReverse[damperStatus])
+                    currDev.updateStateOnServer("zoneDamperStatus", DamperStatusMapReverse[damperStatus])
+                    isHeatOn = True
                     isHeatOn = (damperStatus == 0) and (heatCall == 1)
-                    currDev.updateStateOnServer(u"hvacHeaterIsOn", isHeatOn)
+                    currDev.updateStateOnServer("hvacHeaterIsOn", isHeatOn)
             else:
-                self.plugin.debugLog(u"Ignored parameter %s" % (param,))            
+                self.plugin.logger.debug("Ignored parameter %s" % (param,))            
                                                         
     def setHvacMode(self, zoneIndex, hvacMode):
-        if not self.conn and not self.conn.is_open:
+        if not self.conn or not self.conn.is_open:
             return False
         if hvacMode not in HvacModeMap:
             return False
@@ -151,24 +167,24 @@ class RCS(object):
             self.plugin.sleep(kSleepBetweenComm)
             self.conn.write(cmdString)
             self.plugin.sleep(kSleepBetweenComm)
-        self.plugin.debugLog(u"Sent command: %s" % (cmdString,))
+        self.plugin.logger.debug("Sent command: %s" % (cmdString,))
         return True
 
     def setFanMode(self, zoneIndex, fanMode):
-        if not self.conn and not self.conn.is_open:
+        if not self.conn or not self.conn.is_open:
             return False
         if fanMode not in FanModeMap:
             return False
-        cmdString = "A=1 Z=%s M=%s\r" % (zoneIndex, HvacModeMap[fanMode])
+        cmdString = "A=1 Z=%s M=%s\r" % (zoneIndex, FanModeMap[fanMode])
         with self.connLock:
             self.plugin.sleep(kSleepBetweenComm)
             self.conn.write(cmdString)
             self.plugin.sleep(kSleepBetweenComm)
-        self.plugin.debugLog(u"Sent command: %s" % (cmdString,))
+        self.plugin.logger.debug("Sent command: %s" % (cmdString,))
         return True
 
     def setHvacSetpoint(self, zoneIndex, setpoint):
-        if not self.conn and not self.conn.is_open:
+        if not self.conn or not self.conn.is_open:
             return False
         if setpoint < 40 or setpoint > 99:
             return False
@@ -177,5 +193,5 @@ class RCS(object):
             self.plugin.sleep(kSleepBetweenComm)
             self.conn.write(cmdString)
             self.plugin.sleep(kSleepBetweenComm)
-        self.plugin.debugLog(u"Sent command: %s" % (cmdString,))
+        self.plugin.logger.debug("Sent command: %s" % (cmdString,))
         return True
