@@ -79,7 +79,7 @@ class Plugin(indigo.PluginBase):
             while True:
                 self.rcs.getAllZoneStatus()
                 self.sleep(15)
-        except self.stopThread:
+        except self.StopThread:
             self.logger.debug("Shutting down poll loop.")
         finally:
             self.rcs.closeComm()
