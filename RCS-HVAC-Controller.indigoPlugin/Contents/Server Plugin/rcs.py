@@ -134,7 +134,7 @@ class RCS(object):
 
         # Getstatus type 2
         #   Cooling functions not implemented as no air conditioner to test with.
-        #   Fan modes not tested as not sure they are support in my installation.
+        #   Fan modes not tested as not sure that they are supported in my installation.
         heatCall = 0
         paramList2 = statusType2.split()
         self.plugin.logger.debug(" paramList2 = %s" % (paramList2,))
@@ -154,8 +154,9 @@ class RCS(object):
                     isHeatOn = (damperStatus == 0) and (heatCall == 1)
                     currDev.updateStateOnServer("hvacHeaterIsOn", isHeatOn)
             else:
-                self.plugin.logger.debug("Ignored parameter %s" % (param,))            
-                                                        
+                self.plugin.logger.debug("Ignored parameter %s" % (param,))
+
+    # noinspection DuplicatedCode
     def setHvacMode(self, zoneIndex, hvacMode):
         if not self.conn or not self.conn.is_open:
             return False
@@ -169,6 +170,7 @@ class RCS(object):
         self.plugin.logger.debug("Sent command: %s" % (cmdString,))
         return True
 
+    # noinspection DuplicatedCode
     def setFanMode(self, zoneIndex, fanMode):
         if not self.conn or not self.conn.is_open:
             return False
