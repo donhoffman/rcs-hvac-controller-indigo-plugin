@@ -3,22 +3,22 @@
 <plist version="1.0">
 <dict>
 	<key>PluginVersion</key>
-	<string>1.0.0</string>
+	<string>2022.1.0</string>
 	<key>ServerApiVersion</key>
-	<string>2.0</string>
+	<string>3.0</string>
+	<key>IwsApiVersion</key>
+	<string>1.0.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>RCS 6 Zone HVAC Controller</string>
-	<key>CFBundleName</key>
-	<string>RCS HVAC Contrl</string>
+	<string>RCS 6 Zone HVAC Thermostat</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.gmail.donhoffman.indigoplugin.rcs</string>
+	<string>com.gmail.donhoffman.indigoplugin.rcs-hvac-controller</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.1</string>
+	<string>1.0.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>http://www.perceptiveautomation.com/wiki/doku.php?id=plugins:easydaq_1</string>
+			<string>http://wiki.indigodomo.com/doku.php?id=plugins:example_dev_thermo_1</string>
 		</dict>
 	</array>
 </dict>

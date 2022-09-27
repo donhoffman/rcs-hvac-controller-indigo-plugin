@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
 <PluginConfig>
-<!--
-  <Field type="label" id="serialPortLabel">
-		<Label>Select the serial port used to connect to the RCS Controller device:</Label>
-	</Field>
--->
-	<Field type="serialport" id="serialPort"/>
+	<Field type="serialport" id="serialPort">
+  </Field>
   <Field type="checkbox" id="debugMode" defaultValue="no">
       <Label>Debug mode:</Label>
   </Field>
