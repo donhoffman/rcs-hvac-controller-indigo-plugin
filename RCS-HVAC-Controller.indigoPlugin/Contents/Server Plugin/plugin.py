@@ -12,18 +12,18 @@ import indigo
 from rcs import RCS
 
 kHvacModeEnumToStrMap = {
-    indigo.kHvacMode.Cool			: "cool",
-    indigo.kHvacMode.Heat			: "heat",
-    indigo.kHvacMode.HeatCool		: "auto",
-    indigo.kHvacMode.Off			: "off",
-    indigo.kHvacMode.ProgramHeat	: "program heat",
-    indigo.kHvacMode.ProgramCool	: "program cool",
-    indigo.kHvacMode.ProgramHeatCool	: "program auto"
+    indigo.kHvacMode.Cool:              "cool",
+    indigo.kHvacMode.Heat:              "heat",
+    indigo.kHvacMode.HeatCool:          "auto",
+    indigo.kHvacMode.Off:               "off",
+    indigo.kHvacMode.ProgramHeat:       "program heat",
+    indigo.kHvacMode.ProgramCool:       "program cool",
+    indigo.kHvacMode.ProgramHeatCool:   "program auto"
 }
 
 kFanModeEnumToStrMap = {
-    indigo.kFanMode.AlwaysOn			: "always on",
-    indigo.kFanMode.Auto				: "auto"
+    indigo.kFanMode.AlwaysOn:           "always on",
+    indigo.kFanMode.Auto:               "auto"
 }
 
 
@@ -191,6 +191,7 @@ class Plugin(indigo.PluginBase):
             # Else log failure but do NOT update state on Indigo Server.
             indigo.server.log("Send \"%s\" fan mode change to %s failed" % (dev.name, actionStr), isError=True)
 
+    # noinspection PyUnusedLocal
     def _handleChangeSetpointAction(self, dev, newSetpoint, logActionName, stateKey):
         # Note:  Heat and cool must always be the same on this hardware.
         #  So we always set both to same value when one is set.
